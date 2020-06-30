@@ -94,6 +94,7 @@
                                   <MenuItem mnemonicParsing="false" onAction="#menuSaveClick" text="Wav" />
                                 </items>
                               </Menu>
+                              <MenuItem mnemonicParsing="false" onAction="#menuDetailClick" text="Detail" />
                         </items>
                       </Menu>
                       <Menu mnemonicParsing="false" text="Edit">

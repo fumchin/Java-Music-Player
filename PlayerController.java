@@ -428,6 +428,11 @@ public class PlayerController {
         rd.start(new Stage());
     }
 
+    @FXML
+    void menuDetailClick(ActionEvent event) {
+
+    }
+
     private String Seconds2Str(Double seconds) {
         Integer count = seconds.intValue();
         final Integer Hours = count / 3600;
@@ -669,4 +674,5 @@ public class PlayerController {
         drawWaveform(signal_modify);
         slVolume.setValue(50);
     }
+
 }
