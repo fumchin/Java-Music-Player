@@ -15,7 +15,7 @@ public class FrequencyAnalysisController extends FFTImplement {
     /* something necessary for signal provessign */
     protected ArrayList<double[][]> fft_signal = new ArrayList<double[][]>();
     protected int index[][]; // WavFileeform
-    private PlayerController PlayerController;
+    private PlayerController playerController;
     private final double C_2 = 65.41;
     private final double Db_2 = 69.30;
     private final double D_2 = 73.42;
@@ -63,8 +63,8 @@ public class FrequencyAnalysisController extends FFTImplement {
     }
 
     // get signal form playerController
-    public void passSignal(PlayerController PlayerController, ArrayList<Double>[] input) {
-        this.PlayerController = PlayerController;
+    public void passSignal(PlayerController playerController, ArrayList<Double>[] input) {
+        this.playerController = playerController;
         // store original signal in signal_EQ_save
         try {
             signal_modify = new ArrayList[input.length];

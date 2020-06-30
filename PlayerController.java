@@ -266,6 +266,10 @@ public class PlayerController {
         td.stop();
         btnPlay.setText("Play");
         drawCurrentTimeLine(0);
+
+        /* try */
+        BeatDetection bd = new BeatDetection();
+        bd.findBPM(signal_modify);
     }
 
     /* this funciton is is used to open file */
