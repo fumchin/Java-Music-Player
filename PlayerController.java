@@ -429,8 +429,16 @@ public class PlayerController {
     }
 
     @FXML
-    void menuDetailClick(ActionEvent event) {
-
+    void menuDetailClick(ActionEvent event) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Detail.fxml"));
+        Parent root = (AnchorPane) loader.load();
+        // get TenEQcontroller
+        // TenEQController tenEQController = loader.<TenEQController>getControl ler();
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("EQ"); // displayed in window's title bar
+        stage.setScene(scene);
+        stage.show();
     }
 
     private String Seconds2Str(Double seconds) {
