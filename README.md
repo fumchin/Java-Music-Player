@@ -3,7 +3,7 @@
 > this project includes reading, saving, playing and editing Wavfile. May contain some mistakes.  
 
 # How to run - Windows
-* Make sure that `Java` is installed and `JavaFx` is added into your PATH.( adding path: https://openjfx.io/openjfx-docs/#install-javafx)
+* Make sure that `Java` is installed and `JavaFx` is added into your PATH.
 * Open powershell
 * run  
   1. `javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media  *.java `  
