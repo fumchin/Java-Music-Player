@@ -1,6 +1,6 @@
 # Introduction
-> this is our school assignment for Java practicing.  
-> this project includes reading, saving, playing and editing Wavfile. May contain some mistakes.  
+* This is our school assignment for Java practicing. This project includes reading, saving, playing and editing Wavfile. (May contain some mistakes.)  
+* For more information (PPT written in traditional chinese) -> https://drive.google.com/file/d/1QaUfj6Lz13TAlaMf__OLEFVOOADTupjH/view?usp=sharing  
 
 # How to run - Windows
 * Make sure that `Java` is installed and `JavaFx` is added into your PATH.
