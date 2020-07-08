@@ -24,3 +24,8 @@
 * for those interested in Chord Identify, check `FrequencyAnalysisController.java` and `ChordComposition.java`
   * https://github.com/fumchin/project/blob/master/FrequencyAnalysisController.java
   * https://github.com/fumchin/project/blob/master/ChordComposition.java
+
+# Reference
+* We use `FFT.java` and `Complex.java` from (neat and understandable)  
+  1. https://introcs.cs.princeton.edu/java/97data/FFT.java.html  
+  2. https://introcs.cs.princeton.edu/java/97data/Complex.java.html  
