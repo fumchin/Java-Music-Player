@@ -1,30 +1,17 @@
 ## Java final project
 
 ### 介紹
-```markdown
-Syntax highlighted code block
+這是一款由Java所寫的音樂播放器。
 
-# Header 1
-## Header 2
-### Header 3
+### 特色
+1. 直接從WAV檔案中讀取數位訊號，並可以直接進行音量、速度的調整。
+2. 可以將調整過號的訊號直接進行預覽播放、存檔等功能。
+3. 利用快速傅立葉轉換進行頻域的調整及偵測。包含等化器（equalizer）的實現及簡易的和弦偵測功能。
 
-- Bulleted
-- List
+### 原理
+寫原理好累<br>
+簡單來說就是照著wav檔的歸格去讀取取樣的樣本，然後再對這些樣本去做頻域（fft）＆時域的變換。<br>
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/fumchin/Java_Wav_Signal_Processing/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### 心得
+Java沒有支援音訊處理的東西，所以很多都要自己去寫，不管是讀檔或是存檔、處理的過程也是，雖然很多很繁雜的東西，但其實還蠻有趣的拉。<br>
+最後也拿了個佳作。
