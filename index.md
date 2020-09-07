@@ -1,8 +1,6 @@
 ## Java final project
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
+### 介紹
 ```markdown
 Syntax highlighted code block
 
