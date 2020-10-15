@@ -9,7 +9,7 @@ public class BeatDetection {
 
     public int findBPM(ArrayList<Double>[] signal_modify) {
         ArrayList<Integer> beat_location = new ArrayList<Integer>();
-        /* first alculate 43 instant sound energy */
+        /* first calculate 43 instant sound energy */
         ArrayList<Double> instantEnergy = new ArrayList<Double>();
         int count = 0;
         for (int arrNum = 0; arrNum < 43; arrNum++) {
