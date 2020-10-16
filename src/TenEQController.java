@@ -117,7 +117,7 @@ public class TenEQController extends FFTImplement {
 
         // double[] fm = makeFrequencyMap();
         signal_modify = signal_EQ_save;
-        int length = signal_modify[0].size();
+        int total_length = signal_modify[0].size();
 
         temp = new ArrayList[signal_modify.length];
         for (int channel = 0; channel < signal_modify.length; channel++) {
@@ -143,9 +143,10 @@ public class TenEQController extends FFTImplement {
         /* start to do some adjustments */
         int count = 0;
         double time = 0;
-        int pow = 10;
+        int pow = 15;
         sampleNum = (int) Math.pow(2, pow);
-        while (length > sampleNum) {
+        // while (count < total_length - sampleNum) {
+        for(count = 0; count< total_length-sampleNum; count+= sampleNum/2) {
             // find sampleRate
             // int pow = 15;
             // while (Math.pow(2, pow) < length) {
@@ -231,13 +232,24 @@ public class TenEQController extends FFTImplement {
             // add into signal modify
             for (int col = 0; col < sampleNum; col++) {
                 for (int row = 0; row < signal_modify.length; row++) {
-                    // if (col != (sampleNum - 2) / 2) {
-                    temp[row].add(part_signal_arr[row][col].re());
-                    // }
+                    if(count == 0){
+                        temp[row].add(part_signal_arr[row][col].re());
+                    }
+                    else{
+                        // first half -> add to previous
+                        if(col < (sampleNum/2)){
+                            temp[row].set(count + col, part_signal_arr[row][col].re() + temp[row].get(count + col));
+                        }
+                        else{
+                            temp[row].add(part_signal_arr[row][col].re());
+                        }
+
+                        if(col == (sampleNum/2)){
+                            // temp[row].set(count + col, part_signal_arr[row][col].re() * 0.8 );
+                        }
+                    }
                 }
             }
-            count += sampleNum;
-            length -= sampleNum;
         }
         signal_modify = temp;
         PlayerController.callbackSignal(signal_modify);
