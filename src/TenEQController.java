@@ -104,7 +104,7 @@ public class TenEQController extends FFTImplement {
      */
 
     public TenEQController() {
-        super((int) Math.pow(2, 16));
+        super((int) Math.pow(2, 15));
     }
 
     /*
@@ -143,14 +143,16 @@ public class TenEQController extends FFTImplement {
         /* start to do some adjustments */
         int count = 0;
         double time = 0;
-        while (length > WavFile.getSampleRate()) {
+        int pow = 10;
+        sampleNum = (int) Math.pow(2, pow);
+        while (length > sampleNum) {
             // find sampleRate
-            int pow = 16;
+            // int pow = 15;
             // while (Math.pow(2, pow) < length) {
             //     pow++;
             // }
             // pow--;
-            sampleNum = (int) Math.pow(2, pow);
+            // sampleNum = (int) Math.pow(2, pow);
             // System.out.println(x);
             for (int row = 0; row < signal_modify.length; row++) {
                 part_signal_arr[row] = new Complex[sampleNum];
@@ -169,9 +171,10 @@ public class TenEQController extends FFTImplement {
             // fft -> filter ->ifft
             // fft
             for (int row = 0; row < signal_modify.length; row++) {
-                Util.hanningWindow(fft_signal_arr[row]);
+                part_signal_arr[row] = Util.hanningWindow(part_signal_arr[row]);
                 fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
             }
+            // System.out.println("hi");
             // filter
             for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < signal_modify.length; row_filter++) {
