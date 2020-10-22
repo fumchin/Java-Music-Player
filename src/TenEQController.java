@@ -2,6 +2,7 @@
 /* use this class to implement equalizer
 first: get the signal form playController
 second: do fft after pressing apply, and pass back to playcontroller in order to preview  */
+// set sample number -> hanning window -> fft -> filter -> ifft -> overlapping to recover
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -117,11 +118,12 @@ public class TenEQController extends FFTImplement {
 
         // double[] fm = makeFrequencyMap();
         signal_modify = signal_EQ_save;
-        int total_length = signal_modify[0].size();
+
 
         temp = new ArrayList[signal_modify.length];
         for (int channel = 0; channel < signal_modify.length; channel++) {
             temp[channel] = new ArrayList<Double>();
+            temp[channel].ensureCapacity(signal_modify[channel].size());
         }
 
         fft_signal_arr = new Complex[signal_modify[0].size()][];
@@ -143,24 +145,15 @@ public class TenEQController extends FFTImplement {
         /* start to do some adjustments */
         int count = 0;
         double time = 0;
-        int pow = 15;
+        int total_length = signal_modify[0].size();
+        int pow = 16;
         sampleNum = (int) Math.pow(2, pow);
-        // while (count < total_length - sampleNum) {
         for(count = 0; count< total_length-sampleNum; count+= sampleNum/2) {
-            // find sampleRate
-            // int pow = 15;
-            // while (Math.pow(2, pow) < length) {
-            //     pow++;
-            // }
-            // pow--;
-            // sampleNum = (int) Math.pow(2, pow);
-            // System.out.println(x);
+            // +sampleNum/2 for overlapping to recover hanning window
             for (int row = 0; row < signal_modify.length; row++) {
                 part_signal_arr[row] = new Complex[sampleNum];
                 fft_signal_arr[row] = new Complex[sampleNum];
             }
-            // for (count = 0; count < signal_modify[0].size() - sampleNum; count +=
-            // sampleNum / 3) {
 
             // put arraylist into complex 2d array
             for (int col = 0; col < sampleNum; col++) {
@@ -169,10 +162,11 @@ public class TenEQController extends FFTImplement {
                     fft_signal_arr[row][col] = new Complex(0, 0);
                 }
             }
-            // fft -> filter ->ifft
-            // fft
+
             for (int row = 0; row < signal_modify.length; row++) {
+                // hanning window
                 part_signal_arr[row] = Util.hanningWindow(part_signal_arr[row]);
+                // fft
                 fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
             }
             // System.out.println("hi");
@@ -250,7 +244,7 @@ public class TenEQController extends FFTImplement {
                     }
                 }
             }
-        }
+        };
         signal_modify = temp;
         PlayerController.callbackSignal(signal_modify);
 

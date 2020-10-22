@@ -25,7 +25,6 @@ public class WavFile {
     private static String fileName;
 
     private static ArrayList<Double>[] signal; // normalize between -1~1
-    private static ArrayList<Double>[] signal_dB; // change to dB
 
     public static int getSampleRate() {
         return fmt.getSampleRate();
@@ -106,10 +105,9 @@ public class WavFile {
             // get real data
             buffer_signal = new byte[fmt.getBitsPerSample() / (fmt.getNumChannels() * 4)];
             signal = new ArrayList[fmt.getNumChannels()]; // new with numbers of channel
-            signal_dB = new ArrayList[fmt.getNumChannels()]; // new with numbers of channel
             for (int i = 0; i < fmt.getNumChannels(); i++) {
                 signal[i] = new ArrayList<Double>();
-                signal_dB[i] = new ArrayList<Double>();
+                signal[i].ensureCapacity((int) data.getSubchunk2Size());
             }
             double temp;
             int k;

@@ -158,8 +158,8 @@ public class PlayerController {
         });
     }
 
-    double vol = 50;
-    double last_vol = 1;
+    double vol = 0.5;
+    double last_vol = 0.5;
     double speed = 1;
     double BPS = WavFile.getBitsPerSample();
 
@@ -167,33 +167,30 @@ public class PlayerController {
      * initialize function is used to create our listener (speed, volumn)
      */
     public void initialize() {
-        // player = new Play();
-        slVolume.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
-                // show changes
-                vol = (double) newValue.intValue() / 50;
-                if (vol == 0) {
-                    vol = 1;
-                }
-                lbVolume.setText(String.valueOf(vol));
+        // adjust volume when mouse release the slider
+        slVolume.setOnMouseReleased(event -> {
+            vol = slVolume.getValue() / 100;
+            lbVolume.setText(String.valueOf((int)(vol * 100)));
 
-                // modify signal
-                double constant = signal[0].size() / signal_modify[0].size();
-                signal_temp = new ArrayList[signal_modify.length];
-                for (int channel = 0; channel < signal.length; channel++) {
-                    signal_temp[channel] = new ArrayList(signal_modify[channel]);
-                    for (int x = 0; x < signal_temp[channel].size(); x++) {
-                        // use original signal to modify sound
-                        signal_temp[channel].set(x, signal_modify[channel].get(x * (int) constant) * (vol / last_vol));
-                    }
+            // modify signal
+            double constant = signal[0].size() / signal_modify[0].size();
+            signal_temp = new ArrayList[signal_modify.length];
+            for (int channel = 0; channel < signal.length; channel++) {
+                signal_temp[channel] = new ArrayList(signal_modify[channel]);
+                for (int x = 0; x < signal_temp[channel].size(); x++) {
+                    // use original signal to modify sound
+                    signal_temp[channel].set(x, signal_modify[channel].get(x * (int) constant) * (vol / last_vol));
                 }
-                last_vol = vol;
-                drawWaveform(signal_temp);
-                signal_modify = signal_temp;
             }
+            last_vol = vol;
+            if(last_vol == 0){
+                last_vol = 0.5;
+            }
+            drawWaveform(signal_temp);
+            signal_modify = signal_temp;
         });
 
+        // not done yet
         slSpeed.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
