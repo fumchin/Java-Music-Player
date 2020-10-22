@@ -1,29 +1,30 @@
 # Introduction
-* This is our school assignment for Java practicing. This project includes reading, saving, playing and editing Wavfile. (May contain some mistakes.)  
-* For more information (PPT written in traditional chinese) -> https://drive.google.com/file/d/1QaUfj6Lz13TAlaMf__OLEFVOOADTupjH/view?usp=sharing  
+* 109下學期Java期末專題
+* 做音樂播放器
 
-# How to run - Windows
-* Make sure that `Java` is installed and `JavaFx` is added into your PATH.
-* Open powershell
-* run  
-  1. `javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media  *.java `  
-  2. `java --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media Player` 
-* Choose a Wave audio file you like and edit it
+# 功能
+1. 讀取Wav檔案，最好是44kHz、16 bits per sample的，不然可能會掛掉
+2. 儲存修改好的wav檔案
+3. 預覽播放，可以讀在修改當下聽修改的內容
+4. 簡易的編輯功能：速度、音量等等
+5. EQ(Equalizer)等化器，可以調頻率
+6. 簡易的和弦辨識，還有很大的進步空間，但簡單的和弦是可以成功辨識的（吉他伴奏之類的）
+7. 播放影片、錄音......
 
-# Some cool fuctions
-1. Graphic Equalizer  (use eq to modify the frquency)  
-2. Chord Identify (can only find Major, minor and dim, and this function is not pretty accurate)  
+# 版本（操作步驟有空再寫哈哈哈）
+* Java 11
+* JavaFx 11
 
-# How it works
-* for those interested in reading & saving Wavfile, check `WavFile.java`.  
-  * https://github.com/fumchin/project/blob/master/WavFile.java
-* for those interested in playing audio by sample points, check `playBySample() method in PlayerController.java`.  
-  * https://github.com/fumchin/project/blob/master/PlayerController.java#L618
-* for those interested in Equalizer, check `TenEQController.java`.
-  * https://github.com/fumchin/project/blob/master/TenEQController.java
-* for those interested in Chord Identify, check `FrequencyAnalysisController.java` and `ChordComposition.java`
-  * https://github.com/fumchin/project/blob/master/FrequencyAnalysisController.java
-  * https://github.com/fumchin/project/blob/master/ChordComposition.java
+# 最近在幹麻
+* 之前因為很趕所以fft, ifft的轉換並沒有用得很精細，最近在fft之前加了hanning window並在ifft後利用overlap重組訊號，以減少spectral leakage的產生。
+* 優化一下程式碼，寫太趕有點亂哈哈，而且原先fft, ifft一跑下去很容易當機發燙，最近在把他修好一點。
+* 寫了shell script，好執行多了。
+
+# 之後要幹麻
+* 拍點偵測：本來在學期間想做出來，但是失敗了qqqq，想花點時間把他做好，畢竟相信對和弦辨識會有一定幫助。
+* 和弦辨識：一開始做這個本來是想做好和弦辨識就號，但做到一半跑去做EQ了。之後想要把和弦辨識做好，先從一般的方法開始，有機會考慮能夠加入deep learning吧，但不知道有沒有時間。
+* 效果器：本身蠻愛彈吉他的，希望能寫出效果器(delay, reverb, distrotion......)然後把吉他接到電腦上去做即時的轉換，感覺會蠻好玩的。
+* 調音器、即時和弦辨識......之類的，希望推甄有上不用考試就可以好好玩這個了哈哈哈。
 
 # Reference
 * We use `FFT.java` and `Complex.java` from (neat and understandable)  
