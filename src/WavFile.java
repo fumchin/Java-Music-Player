@@ -1,8 +1,13 @@
 //WavFile
-//RIFF chunk -> know its type (wav here)
-//Fmt chunk -> describe the format of the sound information
-//data chunk -> size of sound information and raw sound data
-//output -> signal(Object ArrayList<double>) between -1 and 1
+// there are various chunk in wavfile , we get the most important chunk in the file
+// 1 main chunk
+// RIFF chunk -> know its type (wav here)
+
+// 2 subchunks
+// Fmt chunk -> describe the format of the sound information
+// data chunk -> size of sound information and raw sound data
+
+// output -> signal(Object ArrayList<double>) between -1 and 1
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -58,18 +63,25 @@ public class WavFile {
             // input = new FileInputStream("C_major.wav");
             input = new FileInputStream(fileName);
             // Riff
+            // find riff chunk
+            do{
+                input.read(buffer_four);
+                riff.setChunkID(buffer_four);
+            }while(riff.getChunkID().compareTo("RIFF") != 0);
+            
             input.read(buffer_four);
-            riff.setChunkID(buffer_four);
+            riff.setChunkDataSize(buffer_four);
             input.read(buffer_four);
-            riff.setChunSize(buffer_four);
-            input.read(buffer_four);
-            riff.setFormat(buffer_four);
+            riff.setRiffType(buffer_four);
 
             // Format
+            // find format chunk
+            do{
+                input.read(buffer_four);
+                fmt.setFmtSubchunkID(buffer_four);
+            }while(fmt.getSubchunkID().compareTo("fmt") != 0);
             input.read(buffer_four);
-            fmt.setSubchunk(buffer_four);
-            input.read(buffer_four);
-            fmt.setSubchunk1Size(buffer_four);
+            fmt.setFmtSubchunkSize(buffer_four);
             input.read(buffer_two);
             fmt.setAudioFormat(buffer_two);
             input.read(buffer_two);
@@ -237,7 +249,7 @@ class Riff {
         System.out.println("chunk ID:\t" + chunkID);
     }
 
-    public void setChunSize(byte[] chunkSize_read) {
+    public void setChunkDataSize(byte[] chunkSize_read) {
         int k = 0;
         chunkSize = 0;
         for (int i = 0; i < chunkSize_read.length; i++) {
@@ -247,7 +259,7 @@ class Riff {
         System.out.println("chunk size:\t" + chunkSize);
     }
 
-    public void setFormat(byte[] format_read) {
+    public void setRiffType(byte[] format_read) {
         char[] format_char = new char[4];
         for (int i = 0; i < format_read.length; i++) {
             format_char[i] = (char) (int) Integer.valueOf(format_read[i]);
@@ -271,8 +283,8 @@ class Riff {
 }
 
 class Fmt {
-    private String subchunk;
-    private long subchunk1Size;
+    private String subchunkID;
+    private long fmtSubchunkSize;
     private int audioFormat; // 1->PCM
     private int numChannels; // channel
     private int sampleRate;
@@ -281,7 +293,7 @@ class Fmt {
     private int bitsPerSample;
 
     public Fmt() {
-        subchunk1Size = 0;
+        fmtSubchunkSize = 0;
         audioFormat = 0;
         numChannels = 0;
         sampleRate = 0;
@@ -290,23 +302,23 @@ class Fmt {
         bitsPerSample = 0;
     }
 
-    public void setSubchunk(byte[] subchunk_read) {
+    public void setFmtSubchunkID(byte[] subchunk_read) {
         char[] subchunk_char = new char[4];
         for (int i = 0; i < subchunk_read.length; i++) {
             subchunk_char[i] = (char) (int) Integer.valueOf(subchunk_read[i]);
         }
-        subchunk = new String(subchunk_char);
-        System.out.println("subchunk:\t" + subchunk);
+        subchunkID = new String(subchunk_char);
+        System.out.println("subchunk:\t" + subchunkID);
     }
 
-    public void setSubchunk1Size(byte[] subchunk1Size_read) {
+    public void setFmtSubchunkSize(byte[] subchunk1Size_read) {
         int k = 0;
-        subchunk1Size = 0;
+        fmtSubchunkSize = 0;
         for (int i = 0; i < subchunk1Size_read.length; i++) {
-            subchunk1Size += (long) (Integer.valueOf(subchunk1Size_read[i]) & 0xFF) * Math.pow(16, k);
+            fmtSubchunkSize += (long) (Integer.valueOf(subchunk1Size_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("subchunk1 size:\t" + subchunk1Size);
+        System.out.println("subchunk1 size:\t" + fmtSubchunkSize);
     }
 
     public void setAudioFormat(byte[] audioFormat_read) {
@@ -369,12 +381,12 @@ class Fmt {
         System.out.println("bit per sample:\t" + bitsPerSample);
     }
 
-    public String getSubchunk() {
-        return subchunk;
+    public String getSubchunkID() {
+        return subchunkID;
     }
 
     public long getSubchunk1Size() {
-        return subchunk1Size;
+        return fmtSubchunkSize;
     }
 
     public int getAudioFomat() {
