@@ -50,15 +50,18 @@ public class WavFile {
         return fmt.getBitsPerSample();
     }
 
-    public static void read(String fileNameInput) throws IOException {
+    public static double getFileSize(){
+        return riff.getChunkSize();
+    }
+
+    public static void read(String fileNameInput) throws IOException{
         try {
+            System.out.println("reading file...please wait...");
             fileName = fileNameInput;
             byte[] buffer_four = new byte[4];
             byte[] buffer_two = new byte[2];
             byte[] buffer_signal;
 
-            // input = new FileInputStream("Tim_Henson_VS_Ichika_Nito.wav");
-            // input = new FileInputStream("C_major.wav");
             input = new FileInputStream(fileName);
             // Riff
             // find riff chunk
@@ -108,11 +111,10 @@ public class WavFile {
             signal = new ArrayList[fmt.getNumChannels()]; // new with numbers of channel
             for (int i = 0; i < fmt.getNumChannels(); i++) {
                 signal[i] = new ArrayList<Double>();
-                signal[i].ensureCapacity((int) data.getSubchunk2Size());
+                signal[i].ensureCapacity((int) data.getDataSubchunkSize());
             }
             double temp;
-            int k;
-            int count = 0;
+            int power;
             // double normalizeConstant;
             // if (fmt.getBitsPerSample() == 8) {
             //     // if bitsPerSample = 8 => unsigned
@@ -121,40 +123,45 @@ public class WavFile {
             //     // if bitsPerSample = 16 or 32 => signed
             //     normalizeConstant = Math.pow(2, fmt.getBitsPerSample() - 1);
             // }
-            // read hex datat from wav file
-            while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
+            
+            // read hex data from wav file
+            // while (count < (data.getDataSubchunkSize() / fmt.getBlockAlign())) {
+            while(input.available() != 0){
                 for (int i = 0; i < fmt.getNumChannels(); i++) {
                     input.read(buffer_signal);
-                    k = 0;
+                    power = 0;
                     temp = 0;
                     if (fmt.getBitsPerSample() != 8) {
                         for (int j = 0; j < buffer_signal.length; j++) {
                             if (j == buffer_signal.length - 1) {
-                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
+                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), power);
                             } else {
                                 temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(fmt.getBitsPerSample(), k);
+                                        * Math.pow(fmt.getBitsPerSample(), power);
                             }
-                            k += 2;
+                            power += 2;
                         }
                     } else {
                         for (int j = 0; j < buffer_signal.length; j++) {
-                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), k);
-                            k += 2;
+                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), power);
+                            power += 2;
                         }
                     }
 
                     // temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
                 }
-                count++;
             }
+            // input.read(buffer_signal);
+            // System.out.print(buffer_signal);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             if (input != null) {
                 input.close();
             }
+            System.out.println("done");
+            showFileInfo();
         }
 
     }
@@ -174,6 +181,7 @@ public class WavFile {
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showSaveDialog(stage);
         try {
+            System.out.println("saving file...please wait...");
             // declare sourcedataline to stream in
             int bufferSize = 2200;
             byte[] data_write;
@@ -207,12 +215,23 @@ public class WavFile {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioBytes);
             AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, audioFormat,
                     input[0].size());
-            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
+            AudioSystem.write(audioInputStream, AudioFileForma            // System.out.println(ChunkID_read[i]);t.Type.WAVE, file);
         } catch (IOException e) {
             System.out.println(e.getStackTrace());
-
+        } finally{
+            System.out.println("x");
         }
 
+    }
+
+    public static void showFileInfo(){
+        System.out.printf("file path:\t%s\n" + 
+                            "sample rate:\t%d Hz\n"+
+                            "channel:\t%d\n" + 
+                            "file size:\t%.0f MB \n" + 
+                            "bitsPerSample:\t%d\n"
+                            , getFileName(), getSampleRate(), getNumChannels(), getFileSize()/1000000, getBitsPerSample()
+                            );
     }
 
 }
@@ -229,7 +248,6 @@ class Riff {
     public void setChunkID(byte[] chunkID_read) {
         char[] chunkID_char = new char[4];
         for (int i = 0; i < chunkID_read.length; i++) {
-            // System.out.println(ChunkID_read[i]);
             chunkID_char[i] = (char) (int) Integer.valueOf(chunkID_read[i]);
         }
         chunkID = new String(chunkID_char);
@@ -404,6 +422,7 @@ class Data {
             dataSubchunk_char[i] = (char) (int) Integer.valueOf(dataSubchunk_read[i]);
         }
         dataSubchunkID = new String(dataSubchunk_char);
+        // System.out.println(dataSubchunkID);
     }
 
     public void setDataSubchunkSize(byte[] subchunk2Size_read) {
@@ -419,7 +438,7 @@ class Data {
         return dataSubchunkID;
     }
 
-    public long getSubchunk2Size() {
+    public long getDataSubchunkSize() {
         return dataSubchunkSize;
     }
 }
