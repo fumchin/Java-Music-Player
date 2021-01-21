@@ -1,4 +1,7 @@
-//WavFile
+// WavFile.java
+// written by fumchin chen
+// https://github.com/fumchin
+
 // there are various chunk in wavfile , we get the most important chunk in the file
 // 1 main chunk
 // RIFF chunk -> know its type (wav here)
@@ -7,7 +10,7 @@
 // Fmt chunk -> describe the format of the sound information
 // data chunk -> size of sound information and raw sound data
 
-// output -> signal(Object ArrayList<double>) between -1 and 1
+// output -> signal(Object ArrayList<double>)
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
