@@ -62,6 +62,7 @@ public class WavFile {
             byte[] buffer_two = new byte[2];
             byte[] buffer_signal;
 
+            
             input = new FileInputStream(fileName);
             // Riff
             // find riff chunk
@@ -215,11 +216,11 @@ public class WavFile {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioBytes);
             AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, audioFormat,
                     input[0].size());
-            AudioSystem.write(audioInputStream, AudioFileForma            // System.out.println(ChunkID_read[i]);t.Type.WAVE, file);
+            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
         } catch (IOException e) {
             System.out.println(e.getStackTrace());
         } finally{
-            System.out.println("x");
+            System.out.println("done");
         }
 
     }
