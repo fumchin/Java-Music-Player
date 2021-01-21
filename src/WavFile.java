@@ -28,7 +28,7 @@ public class WavFile {
     private static InputStream input = null;
     private static String fileName;
 
-    private static ArrayList<Double>[] signal; // normalize between -1~1
+    private static ArrayList<Double>[] signal;
 
     public static int getSampleRate() {
         return fmt.getSampleRate();
@@ -166,47 +166,7 @@ public class WavFile {
         File file1=new File(".");
         String path=file1.getAbsolutePath();
         path=file1.getPath();   
-        // class Note {
-        //     private String noteID;
-        //     private long noteChunkSize;
-        //     private String noteContent;
         
-        //     public Note() {
-        //         noteChunkSize = 0;
-        //     }
-        
-        //     public void setNoteID(String fromDataID) {
-        //         noteID = new String(fromDataID);
-        //         System.out.println("note ID:\t" + noteID);
-        //     }
-        
-        //     public void setNoteChunkSize(byte[] noteChunkSize_read) {
-        //         int k = 0;
-        //         noteChunkSize = 0;
-        //         for (int i = 0; i < noteChunkSize_read.length; i++) {
-        //             noteChunkSize += (Integer.valueOf(noteChunkSize_read[i]) & 0xFF) * Math.pow(16, k);
-        //             k += 2;
-        //         }
-        //         System.out.println("note chunk size:\t" + noteChunkSize);
-        //     }
-        
-        //     public void setNoteContent(byte[] noteContent_read) {
-        //         char[] noteContent_char = new char[(int) getNoteChunkSize()];
-        //         for (int i = 0; i < noteContent_read.length; i++) {
-        //             noteContent_char[i] = (char) (int) Integer.valueOf(noteContent_read[i]);
-        //         }
-        //         noteContent = new String(noteContent_read);
-        //         // System.out.println("note content:\t" + noteContent);
-        //     }
-        
-        //     public String getNoteId() {
-        //         return noteID;
-        //     }
-        
-        //     public long getNoteChunkSize() {
-        //         return noteChunkSize;
-        //     }
-        // }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("save");
         fileChooser.setInitialDirectory(new File(path));
