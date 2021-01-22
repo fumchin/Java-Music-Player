@@ -138,16 +138,16 @@ public class WavFile {
                     if (fmt.getBitsPerSample() != 8) {
                         for (int j = 0; j < buffer_signal.length; j++) {
                             if (j == buffer_signal.length - 1) {
-                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), power);
+                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(16, power);
                             } else {
                                 temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(fmt.getBitsPerSample(), power);
+                                        * Math.pow(16, power);
                             }
                             power += 2;
                         }
                     } else {
                         for (int j = 0; j < buffer_signal.length; j++) {
-                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), power);
+                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(16, power);
                             power += 2;
                         }
                     }
