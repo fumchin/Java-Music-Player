@@ -25,39 +25,39 @@ import java.io.File;
 
 public class WavFile {
 
-    private static Riff riff = new Riff();
-    private static Fmt fmt = new Fmt();
-    private static Data data = new Data();
-    private static InputStream input = null;
-    private static String fileName;
+    private Riff riff = new Riff();
+    private Fmt fmt = new Fmt();
+    private Data data = new Data();
+    private InputStream input = null;
+    private String fileName;
 
-    private static ArrayList<Double>[] signal;
+    private ArrayList<Double>[] signal;
 
-    public static int getSampleRate() {
+    public int getSampleRate() {
         return fmt.getSampleRate();
     }
 
-    public static String getFileName() {
+    public String getFileName() {
         return fileName;
     }
 
-    public static int getNumChannels() {
+    public int getNumChannels() {
         return fmt.getNumChannels();
     }
 
-    public static ArrayList<Double>[] getSignal() {
+    public ArrayList<Double>[] getSignal() {
         return signal;
     }
 
-    public static int getBitsPerSample() {
+    public int getBitsPerSample() {
         return fmt.getBitsPerSample();
     }
 
-    public static double getFileSize(){
+    public double getFileSize(){
         return riff.getChunkSize();
     }
 
-    public static void read(String fileNameInput) throws IOException{
+    public void read(String fileNameInput) throws IOException{
         try {
             System.out.println("reading file...please wait...");
             fileName = fileNameInput;
@@ -165,12 +165,12 @@ public class WavFile {
                 input.close();
             }
             System.out.println("done");
-            showFileInfo();
+            System.out.println(getFileInfo());
         }
 
     }
 
-    public static void saveAsWav(ArrayList<Double>[] input) {
+    public void saveAsWav(ArrayList<Double>[] input) {
         // file chooser
 
         Stage stage = new Stage();
@@ -228,14 +228,15 @@ public class WavFile {
 
     }
 
-    public static void showFileInfo(){
-        System.out.printf("file path:\t%s\n" + 
-                            "sample rate:\t%d Hz\n"+
-                            "channel:\t%d\n" + 
-                            "file size:\t%.0f MB \n" + 
-                            "bitsPerSample:\t%d\n"
-                            , getFileName(), getSampleRate(), getNumChannels(), getFileSize()/1000000, getBitsPerSample()
-                            );
+    public String getFileInfo(){
+        String info = String.format("file path:\t%s\n" + 
+                                    "sample rate:\t%d Hz\n"+
+                                    "channel:\t%d\n" + 
+                                    "file size:\t%.0f MB \n" + 
+                                    "bitsPerSample:\t%d\n"
+                                    , getFileName(), getSampleRate(), getNumChannels(), getFileSize()/1000000, getBitsPerSample()
+                                    );
+        return info;
     }
 
 }
