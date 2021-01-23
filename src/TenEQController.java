@@ -173,9 +173,9 @@ public class TenEQController extends FFTImplement {
             // filter
             for (int col_filter = 0; col_filter < sampleNum; col_filter++) {
                 for (int row_filter = 0; row_filter < signal_modify.length; row_filter++) {
-                    double fre = ((double) (col_filter) * (double) WavFile.getSampleRate() / sampleNum);
+                    double fre = ((double) (col_filter) * (double) wavFileInfo.getSampleRate() / sampleNum);
                     if (col_filter >= sampleNum / 2) {
-                        fre = ((double) (sampleNum - col_filter) * (double) WavFile.getSampleRate() / sampleNum);
+                        fre = ((double) (sampleNum - col_filter) * (double) wavFileInfo.getSampleRate() / sampleNum);
                     }
                     /* ============================== */
                     /* modify signal by frquency here */
@@ -268,9 +268,10 @@ public class TenEQController extends FFTImplement {
 
     /* this function is used to make frequency map for signal_ */
     /* this function is used to catch reference that passed from PlayerController */
-    public void passSignal(PlayerController PlayerController, ArrayList<Double>[] input) {
+    public void passSignal(PlayerController PlayerController, ArrayList<Double>[] input, WavFile wavFileInfo) {
         this.signal_modify = input;
         this.PlayerController = PlayerController;
+        this.wavFileInfo = wavFileInfo;
         // store original signal in signal_EQ_save
         try {
             signal_EQ_save = new ArrayList[signal_modify.length];
@@ -320,7 +321,7 @@ public class TenEQController extends FFTImplement {
         styleComboBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                EQ eq = new EQ();
+                // EQ eq = new EQ();
                 if (t1.equals("Low Pass")) {
                     // copy
                     sl31.setValue(0);

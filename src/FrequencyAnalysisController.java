@@ -63,8 +63,9 @@ public class FrequencyAnalysisController extends FFTImplement {
     }
 
     // get signal form playerController
-    public void passSignal(PlayerController PlayerController, ArrayList<Double>[] input) {
-        this.PlayerController = PlayerController;
+    public void passSignal(PlayerController playerController, ArrayList<Double>[] input, WavFile wavFileInfo) {
+        this.PlayerController = playerController;
+        this.wavFileInfo = wavFileInfo;
         // store original signal in signal_EQ_save
         try {
             signal_modify = new ArrayList[input.length];
@@ -81,17 +82,17 @@ public class FrequencyAnalysisController extends FFTImplement {
      */
     public List<Map.Entry<Double, String>> signalAnalysis(ArrayList<Double>[] input) {
         Map<Double, String> result_map = new LinkedHashMap<Double, String>();
-        part_signal_arr = new Complex[WavFile.getNumChannels()][sampleNum];
-        fft_signal_arr = new Complex[WavFile.getNumChannels()][];
+        part_signal_arr = new Complex[wavFileInfo.getNumChannels()][sampleNum];
+        fft_signal_arr = new Complex[wavFileInfo.getNumChannels()][];
         for (int count = 0; count < input[0].size() - sampleNum; count += sampleNum / 3) {
             // initialize
             for (int col = 0; col < sampleNum; col++) {
-                for (int row = 0; row < WavFile.getNumChannels(); row++) {
+                for (int row = 0; row < wavFileInfo.getNumChannels(); row++) {
                     part_signal_arr[row][col] = new Complex(input[row].get(count + col), 0);
                 }
             }
             // do fft
-            for (int row = 0; row < WavFile.getNumChannels(); row++) {
+            for (int row = 0; row < wavFileInfo.getNumChannels(); row++) {
                 fft_signal_arr[row] = FFT.fft(part_signal_arr[row]);
             }
             // make map
@@ -121,7 +122,7 @@ public class FrequencyAnalysisController extends FFTImplement {
                 if (temp >= sampleNum / 2) {
                     temp = sampleNum - temp;
                 }
-                // System.out.print(temp * WavFile.getSampleRate() / sampleNum + ": " + (Double)
+                // System.out.print(temp * wavFileInfo.getSampleRate() / sampleNum + ": " + (Double)
                 // e.getValue() + "\t");
                 k++;
             }
@@ -181,7 +182,7 @@ public class FrequencyAnalysisController extends FFTImplement {
             // + "\t" + B_sum);
             // add count(location point) and ChordName into List
             if (chordName.compareTo("") != 0) {
-                result_map.put((double) (count + sampleNum / 3) / WavFile.getSampleRate(), chordName);
+                result_map.put((double) (count + sampleNum / 3) / wavFileInfo.getSampleRate(), chordName);
             }
             // System.out.println(chordName);
             // System.out.println("============================================================================");
@@ -222,7 +223,7 @@ public class FrequencyAnalysisController extends FFTImplement {
             if (index >= sampleNum / range) {
                 index = sampleNum - index;
             }
-            fre = (int) (index * WavFile.getSampleRate() / sampleNum);
+            fre = (int) (index * wavFileInfo.getSampleRate() / sampleNum);
             if ((fre % (int) Math.round(C_2)) <= range || (fre % (int) Math.round(C_2)) >= (C_2 - range)) {
                 C_sum += (Double) e.getValue();
             } else if ((fre % (int) Math.round(Db_2)) <= range || (fre % (int) Math.round(Db_2)) >= (Db_2 - range)) {
@@ -265,7 +266,7 @@ public class FrequencyAnalysisController extends FFTImplement {
             if (index >= sampleNum / range) {
                 index = sampleNum - index;
             }
-            fre = (int) (index * WavFile.getSampleRate() / sampleNum);
+            fre = (int) (index * wavFileInfo.getSampleRate() / sampleNum);
 
             if ((fre >= E_2 - range) && (fre <= E_2 + range)) {
                 temp_power = (Double) e.getValue();
@@ -322,7 +323,7 @@ public class FrequencyAnalysisController extends FFTImplement {
     public int[] getNLargestFrequencyIndex(Complex[] input, int n) {
 
         int[] indexArr = new int[n];
-        sampleRate = WavFile.getSampleRate();
+        sampleRate = wavFileInfo.getSampleRate();
         ArrayList<Integer> index = new ArrayList<Integer>();
         double a, b;
         // init
@@ -335,10 +336,10 @@ public class FrequencyAnalysisController extends FFTImplement {
             // a = Math.pow(input[i].re(), 2) + Math.pow(input[i].im(), 2);
             a = Math.abs(input[i].re());
             // System.out.println(i + ": " + a);
-            fre = ((double) i * (double) WavFile.getSampleRate() / sampleNum);
+            fre = ((double) i * (double) wavFileInfo.getSampleRate() / sampleNum);
             if (i >= sampleNum / 2) {
                 temp = sampleNum - i;
-                fre = ((double) temp * (double) WavFile.getSampleRate() / sampleNum);
+                fre = ((double) temp * (double) wavFileInfo.getSampleRate() / sampleNum);
             }
             // System.out.println(fre);
             // compare with those inside index array

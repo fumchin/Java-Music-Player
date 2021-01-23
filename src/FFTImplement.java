@@ -8,6 +8,7 @@ public class FFTImplement {
     protected ArrayList<Double>[] signal_modify;
     protected Complex[][] part_signal_arr;
     protected Complex[][] fft_signal_arr;
+    protected WavFile wavFileInfo;
 
     public FFTImplement(int sampleNum) {
         this.sampleNum = sampleNum;

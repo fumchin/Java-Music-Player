@@ -124,10 +124,10 @@ public class PlayerController {
     private Media media = new Media(file.toURI().toString());
     private MediaPlayer mplayer = new MediaPlayer(media);
     FileChooser fileChooser = new FileChooser();
-    // int BPS =WavFile.getBitsPerSample();
+    // int BPS =newWavFile.getBitsPerSample();
 
     // wavfile
-    // private WavFile wf;
+    // private newWavFile wf;
     protected ArrayList<Double>[] signal;
     protected ArrayList<Double>[] signal_modify;
     protected ArrayList<Double>[] signal_temp;
@@ -148,6 +148,8 @@ public class PlayerController {
     private double pauseTime;
     // private Play player;
 
+    private WavFile newWavFile = new WavFile();
+
     public void start(Stage primarytStage) {
         mView.fitWidthProperty().bind(pane.widthProperty());
         mView.fitHeightProperty().bind(pane.heightProperty());
@@ -161,7 +163,7 @@ public class PlayerController {
     double vol = 0.5;
     double last_vol = 0.5;
     double speed = 1;
-    double BPS = WavFile.getBitsPerSample();
+    double BPS = newWavFile.getBitsPerSample();
 
     /*
      * initialize function is used to create our listener (speed, volumn)
@@ -245,10 +247,10 @@ public class PlayerController {
         if (btnPlay.getText().equals("Play")) {
             btnPlay.setText("Pause");
             // playBySample(signal_modify, 0, signal_modify[0].size() /
-            // WavFile.getSampleRate());
+            // newWavFile.getSampleRate());
             // mplayer.play();
             // player.play();
-            playBySample(signal_modify, pauseTime, signal_modify[0].size() / WavFile.getSampleRate());
+            playBySample(signal_modify, pauseTime, signal_modify[0].size() / newWavFile.getSampleRate());
         } else {
             btnPlay.setText("Play");
             td.stop();
@@ -271,9 +273,10 @@ public class PlayerController {
         double sp = slSpeed.getValue();
         file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            WavFile.read(file.getAbsolutePath());
-            signal = WavFile.getSignal();
-            // sampleRate = WavFile.getSampleRate();
+            // WavFile newWavFile = new WavFile();
+            newWavFile.read(file.getAbsolutePath());
+            signal = newWavFile.getSignal();
+            // sampleRate = newWavFile.getSampleRate();
             modifyArrayList();
             signal_EQ_save = makeModifyArrayList();
             drawWaveform(signal);
@@ -292,7 +295,7 @@ public class PlayerController {
             // get TenEQcontroller
             FrequencyAnalysisController frequencyAnalysisController = loader
                     .<FrequencyAnalysisController>getController();
-            frequencyAnalysisController.passSignal(this, signal_modify);
+            frequencyAnalysisController.passSignal(this, signal_modify, newWavFile);
             List<Map.Entry<Double, String>> chordTimeList = frequencyAnalysisController.signalAnalysis(signal_modify);
             double interval = signal_modify[0].size() / waveformCanvas1.getWidth();
             chordPane.getChildren().clear();
@@ -300,7 +303,7 @@ public class PlayerController {
                 Label chordLabel = new Label(e.getValue());
                 Line chordLine = new Line(e.getKey(), 0, e.getKey(), 20);
                 chordLabel.setFont(new Font("Arial", 8));
-                chordLabel.setLayoutX(e.getKey() * WavFile.getSampleRate() / interval);
+                chordLabel.setLayoutX(e.getKey() * newWavFile.getSampleRate() / interval);
                 chordLabel.setLayoutY(0);
                 chordPane.getChildren().add(chordLabel);
             }
@@ -322,7 +325,7 @@ public class PlayerController {
             interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
             x = event.getX();
             // find the time correspond to the x
-            timeClick = (x * interval) / WavFile.getSampleRate();
+            timeClick = (x * interval) / newWavFile.getSampleRate();
             pauseTime = timeClick;
             drawCurrentTimeLine(timeClick);
         } else {
@@ -330,10 +333,10 @@ public class PlayerController {
             interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
             x = event.getX();
             // find the time correspond to the x
-            timeClick = (x * interval) / WavFile.getSampleRate();
+            timeClick = (x * interval) / newWavFile.getSampleRate();
             pauseTime = timeClick;
             drawCurrentTimeLine(timeClick);
-            playBySample(signal_modify, pauseTime, signal_modify[0].size() / WavFile.getSampleRate());
+            playBySample(signal_modify, pauseTime, signal_modify[0].size() / newWavFile.getSampleRate());
         }
 
     }
@@ -349,7 +352,7 @@ public class PlayerController {
         Parent root = (BorderPane) loader.load();
         // get TenEQcontroller
         TenEQController tenEQController = loader.<TenEQController>getController();
-        tenEQController.passSignal(this, signal_modify);
+        tenEQController.passSignal(this, signal_modify, newWavFile);
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setTitle("EQ"); // displayed in window's title bar
@@ -366,7 +369,7 @@ public class PlayerController {
     /* this function is used to save the signal that we edit */
     @FXML
     void menuSaveClick(ActionEvent event) {
-        WavFile.saveAsWav(signal_modify);
+        newWavFile.saveAsWav(signal_modify);
     }
 
     /*
@@ -376,8 +379,8 @@ public class PlayerController {
     void btnBlockPlayClick(ActionEvent event) {
         // more accurate(?)
 
-        double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
-        double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        double start = (signal_modify[0].size() * blockstarttime / 100) / newWavFile.getSampleRate();
+        double end = (signal_modify[0].size() * blockendtime / 100) / newWavFile.getSampleRate();
 
         btnPlay.setText("Pause");
         playBySample(signal_modify, start, end);
@@ -388,8 +391,8 @@ public class PlayerController {
     @FXML
     void CutClick(ActionEvent event) {
 
-        double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
-        double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        double start = (signal_modify[0].size() * blockstarttime / 100) / newWavFile.getSampleRate();
+        double end = (signal_modify[0].size() * blockendtime / 100) / newWavFile.getSampleRate();
 
         WavCut(start, end);
     }
@@ -397,8 +400,8 @@ public class PlayerController {
     @FXML
     void DelClick(ActionEvent event) {
         td.stop();
-        double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
-        double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        double start = (signal_modify[0].size() * blockstarttime / 100) / newWavFile.getSampleRate();
+        double end = (signal_modify[0].size() * blockendtime / 100) / newWavFile.getSampleRate();
 
         WavDel(start, end);
     }
@@ -413,8 +416,8 @@ public class PlayerController {
     @FXML
     void SpeedClick(ActionEvent event) {
 
-        double start = (signal_modify[0].size() * blockstarttime / 100) / WavFile.getSampleRate();
-        double end = (signal_modify[0].size() * blockendtime / 100) / WavFile.getSampleRate();
+        double start = (signal_modify[0].size() * blockstarttime / 100) / newWavFile.getSampleRate();
+        double end = (signal_modify[0].size() * blockendtime / 100) / newWavFile.getSampleRate();
 
         SpeedUp(start, end);
     }
@@ -429,11 +432,12 @@ public class PlayerController {
     void menuDetailClick(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Detail.fxml"));
         Parent root = (AnchorPane) loader.load();
-        // get TenEQcontroller
-        // TenEQController tenEQController = loader.<TenEQController>getControl ler();
+        DetailController detailController = loader.<DetailController>getController();
+        detailController.passWavInfo(this, newWavFile);
+        detailController.showInfo();
         Scene scene = new Scene(root);
         Stage stage = new Stage();
-        stage.setTitle("EQ"); // displayed in window's title bar
+        stage.setTitle("Detail"); // displayed in window's title bar
         stage.setScene(scene);
         stage.show();
     }
@@ -454,7 +458,7 @@ public class PlayerController {
      */
     private void drawWaveform(ArrayList<Double>[] input) {
         // clean canvas
-        double normalizeConstant = Math.pow(2, WavFile.getBitsPerSample() - 1);
+        double normalizeConstant = Math.pow(2, newWavFile.getBitsPerSample() - 1);
         int interval_temp = input[0].size() / (int) waveformCanvas1.getWidth();
         GraphicsContext gc1 = waveformCanvas1.getGraphicsContext2D();
         GraphicsContext gc2 = waveformCanvas2.getGraphicsContext2D();
@@ -483,7 +487,7 @@ public class PlayerController {
     public synchronized void drawCurrentTimeLine(double time) {
         // static double lastTime;
 
-        int sampleRate = WavFile.getSampleRate();
+        int sampleRate = newWavFile.getSampleRate();
         int interval = signal_modify[0].size() / (int) waveformCanvas1.getWidth();
         double x = ((double) sampleRate * time) / (double) interval;
         sp_pane1.getChildren().clear();
@@ -502,8 +506,8 @@ public class PlayerController {
 
         // set slider label
         lbCurrentTime.setText(
-                Seconds2Str(time) + "/" + Seconds2Str((double) signal_modify[0].size() / WavFile.getSampleRate()));
-        slTime.setValue(100 * time * WavFile.getSampleRate() / signal_modify[0].size());
+                Seconds2Str(time) + "/" + Seconds2Str((double) signal_modify[0].size() / newWavFile.getSampleRate()));
+        slTime.setValue(100 * time * newWavFile.getSampleRate() / signal_modify[0].size());
     }
 
     private void drawFromTimeLine(double time) {
@@ -556,8 +560,8 @@ public class PlayerController {
 
     public void WavCut(double start, double end) {
         signal_cut = new ArrayList[signal.length];
-        int startPos = (int) start * WavFile.getSampleRate();
-        int endPos = (int) end * WavFile.getSampleRate();
+        int startPos = (int) start * newWavFile.getSampleRate();
+        int endPos = (int) end * newWavFile.getSampleRate();
         for (int channel = 0; channel < signal.length; channel++) {
             signal_cut[channel] = new ArrayList<Double>();
             for (int x = startPos; x < endPos; x++) {
@@ -572,8 +576,8 @@ public class PlayerController {
 
     public void WavDel(double start, double end) {
         signal_del = new ArrayList[signal.length];
-        int startPos = (int) start * WavFile.getSampleRate();
-        int endPos = (int) end * WavFile.getSampleRate();
+        int startPos = (int) start * newWavFile.getSampleRate();
+        int endPos = (int) end * newWavFile.getSampleRate();
         for (int channel = 0; channel < signal.length; channel++) {
             signal_del[channel] = new ArrayList<Double>();
             for (int x = 0; x < signal_modify[channel].size(); x++) {
@@ -591,8 +595,8 @@ public class PlayerController {
 
     public void SpeedUp(double start, double end) {
         signal_speed = new ArrayList[signal_modify.length];
-        int startPos = (int) start * WavFile.getSampleRate();
-        int endPos = (int) end * WavFile.getSampleRate();
+        int startPos = (int) start * newWavFile.getSampleRate();
+        int endPos = (int) end * newWavFile.getSampleRate();
 
         for (int channel = 0; channel < signal_modify.length; channel++) {
             signal_speed[channel] = new ArrayList<Double>();
@@ -621,29 +625,29 @@ public class PlayerController {
                     // int bufferSize = 2200;
                     int bufferSize = 2200;
                     byte[] data_write;
-                    AudioFormat audioFormat = new AudioFormat(WavFile.getSampleRate(), WavFile.getBitsPerSample(),
-                            WavFile.getNumChannels(), true, true);
+                    AudioFormat audioFormat = new AudioFormat(newWavFile.getSampleRate(), newWavFile.getBitsPerSample(),
+                            newWavFile.getNumChannels(), true, true);
                     DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
                     SourceDataLine soundLine = (SourceDataLine) AudioSystem.getLine(info);
                     soundLine.open(audioFormat, bufferSize);
                     soundLine.start();
                     // byte counter = 0;
                     int index = 0;
-                    double start = WavFile.getSampleRate() * startTime;
-                    double end = WavFile.getSampleRate() * endTime;
+                    double start = newWavFile.getSampleRate() * startTime;
+                    double end = newWavFile.getSampleRate() * endTime;
                     int x = (int) start;
                     byte[] buffer = new byte[bufferSize];
-                    int normalizeConstant = (int) Math.pow(2, WavFile.getBitsPerSample() - 1);
+                    int normalizeConstant = (int) Math.pow(2, newWavFile.getBitsPerSample() - 1);
 
                     while (x < end) {
                         while (index < bufferSize) {
-                            for (int channel = 0; channel < WavFile.getNumChannels(); channel++) {
+                            for (int channel = 0; channel < newWavFile.getNumChannels(); channel++) {
                                 // int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
                                 int temp = input[channel].get(x).intValue();
                                 data_write = ByteBuffer.allocate(4).putInt(temp).array();
                                 buffer[index] = data_write[2];
                                 buffer[index + 1] = data_write[3];
-                                index += WavFile.getNumChannels();
+                                index += newWavFile.getNumChannels();
                             }
                             x++;
                         }
@@ -651,7 +655,7 @@ public class PlayerController {
                         index = 0;
                         soundLine.write(buffer, 0, bufferSize);
                         // double temp = x;
-                        pauseTime = (double) x / WavFile.getSampleRate();
+                        pauseTime = (double) x / newWavFile.getSampleRate();
                         Platform.runLater(() -> {
                             drawCurrentTimeLine(pauseTime);
                             if (pauseTime >= endTime) {

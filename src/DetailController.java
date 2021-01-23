@@ -8,14 +8,18 @@ public class DetailController {
     @FXML
     private Label detailLabel;
 
-    public void initialize() {
-        detailLabel.setContentDisplay(ContentDisplay.TOP);
-        detailLabel.setText("File name:\t" + WavFile.getFileName());
-        detailLabel.setText(detailLabel.getText() + "\nSampleRate:" + WavFile.getSampleRate());
-        detailLabel.setText(detailLabel.getText() + "\nChannel numbers:" + WavFile.getNumChannels());
-        detailLabel.setText(detailLabel.getText() + "\nBits Per Sample:" + WavFile.getBitsPerSample());
-        detailLabel.setFont(new Font("Verdana", 15));
+    private PlayerController playerController;
+    private WavFile wavFileInfo = new WavFile();
 
+    public void showInfo() {
+        detailLabel.setContentDisplay(ContentDisplay.TOP);
+        detailLabel.setText("File name:\t" + wavFileInfo.getFileInfo());
+        detailLabel.setFont(new Font("Verdana", 15));
+    }
+
+    public void passWavInfo(PlayerController playerController, WavFile wavFileInfo){
+        this.playerController = playerController;
+        this.wavFileInfo  = wavFileInfo;
     }
 
 }

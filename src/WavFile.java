@@ -1,8 +1,16 @@
-//WavFile
-//RIFF chunk -> know its type (wav here)
-//Fmt chunk -> describe the format of the sound information
-//data chunk -> size of sound information and raw sound data
-//output -> signal(Object ArrayList<double>) between -1 and 1
+// WavFile.java
+// written by fumchin chen
+// https://github.com/fumchin
+
+// there are various chunk in wavfile , we get the most important chunk in the file
+// 1 main chunk
+// RIFF chunk -> know its type (wav here)
+
+// 2 subchunks
+// Fmt chunk -> describe the format of the sound information
+// data chunk -> size of sound information and raw sound data
+
+// output -> signal(Object ArrayList<double>)
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -17,59 +25,69 @@ import java.io.File;
 
 public class WavFile {
 
-    private static Riff riff = new Riff();
-    private static Fmt fmt = new Fmt();
-    private static Data data = new Data();
-    private static Note note = new Note();
-    private static InputStream input = null;
-    private static String fileName;
+    private Riff riff = new Riff();
+    private Fmt fmt = new Fmt();
+    private Data data = new Data();
+    private InputStream input = null;
+    private String fileName;
 
-    private static ArrayList<Double>[] signal; // normalize between -1~1
+    private ArrayList<Double>[] signal;
 
-    public static int getSampleRate() {
+    public int getSampleRate() {
         return fmt.getSampleRate();
     }
 
-    public static String getFileName() {
+    public String getFileName() {
         return fileName;
     }
 
-    public static int getNumChannels() {
+    public int getNumChannels() {
         return fmt.getNumChannels();
     }
 
-    public static ArrayList<Double>[] getSignal() {
+    public ArrayList<Double>[] getSignal() {
         return signal;
     }
 
-    public static int getBitsPerSample() {
+    public int getBitsPerSample() {
         return fmt.getBitsPerSample();
     }
 
-    public static void read(String fileNameInput) throws IOException {
+    public double getFileSize(){
+        return riff.getChunkSize();
+    }
+
+    public void read(String fileNameInput) throws IOException{
         try {
+            System.out.println("reading file...please wait...");
             fileName = fileNameInput;
             byte[] buffer_four = new byte[4];
             byte[] buffer_two = new byte[2];
-            byte[] buffer_note;
             byte[] buffer_signal;
 
-            // input = new FileInputStream("Tim_Henson_VS_Ichika_Nito.wav");
-            // input = new FileInputStream("C_major.wav");
+            
             input = new FileInputStream(fileName);
             // Riff
+            // find riff chunk
+            do{
+                input.read(buffer_four);
+                riff.setChunkID(buffer_four);
+            }while(riff.getChunkID().compareTo("RIFF") != 0);
+            
             input.read(buffer_four);
-            riff.setChunkID(buffer_four);
+            riff.setChunkDataSize(buffer_four);
             input.read(buffer_four);
-            riff.setChunSize(buffer_four);
-            input.read(buffer_four);
-            riff.setFormat(buffer_four);
+            riff.setRiffType(buffer_four);
 
             // Format
+            // find format chunk
+            // the space after fmt is essential!!!
+            do{
+                input.read(buffer_four);
+                fmt.setSubchunkID(buffer_four);
+            }while(fmt.getSubchunkID().compareTo("fmt ") != 0);
             input.read(buffer_four);
-            fmt.setSubchunk(buffer_four);
-            input.read(buffer_four);
-            fmt.setSubchunk1Size(buffer_four);
+            fmt.setFmtSubchunkSize(buffer_four);
             input.read(buffer_two);
             fmt.setAudioFormat(buffer_two);
             input.read(buffer_two);
@@ -84,81 +102,75 @@ public class WavFile {
             fmt.setBitsPerSample(buffer_two);
 
             // Data
+            // we check "ta" instead of "data", in order to prevent the ignorance caused by shifting
+            do{
+                input.read(buffer_two);
+                data.setDataSubchunk(buffer_two);
+            }while(data.getDataSubchunk().compareTo("ta") != 0);
             input.read(buffer_four);
-            data.setDataSubchunk(buffer_four);
-            // might be data chunk or note chunk, need to check
-            if (data.getDataSubchunk().compareTo("data") == 0) {
-                input.read(buffer_four);
-                data.setSubchunk2Size(buffer_four);
-            } else {
-                note.setNoteID(data.getDataSubchunk());
-                input.read(buffer_four);
-                note.setNoteChunkSize(buffer_four);
-                buffer_note = new byte[(int) note.getNoteChunkSize()];
-                input.read(buffer_note);
-                note.setNoteContent(buffer_note);
-                input.read(buffer_four);
-                data.setDataSubchunk(buffer_four);
-                input.read(buffer_four);
-                data.setSubchunk2Size(buffer_four);
-            }
+            data.setDataSubchunkSize(buffer_four);
+
             // get real data
             buffer_signal = new byte[fmt.getBitsPerSample() / (fmt.getNumChannels() * 4)];
             signal = new ArrayList[fmt.getNumChannels()]; // new with numbers of channel
             for (int i = 0; i < fmt.getNumChannels(); i++) {
                 signal[i] = new ArrayList<Double>();
-                signal[i].ensureCapacity((int) data.getSubchunk2Size());
+                signal[i].ensureCapacity((int) data.getDataSubchunkSize());
             }
             double temp;
-            int k;
-            int count = 0;
-            double normalizeConstant;
-            if (fmt.getBitsPerSample() == 8) {
-                // if bitsPerSample = 8 => unsigned
-                normalizeConstant = Math.pow(2, fmt.getBitsPerSample());
-            } else {
-                // if bitsPerSample = 16 or 32 => signed
-                normalizeConstant = Math.pow(2, fmt.getBitsPerSample() - 1);
-            }
-            // read hex datat from wav file
-            while (count < (data.getSubchunk2Size() / fmt.getBlockAlign())) {
+            int power;
+            // double normalizeConstant;
+            // if (fmt.getBitsPerSample() == 8) {
+            //     // if bitsPerSample = 8 => unsigned
+            //     normalizeConstant = Math.pow(2, fmt.getBitsPerSample());
+            // } else {
+            //     // if bitsPerSample = 16 or 32 => signed
+            //     normalizeConstant = Math.pow(2, fmt.getBitsPerSample() - 1);
+            // }
+            
+            // read hex data from wav file
+            // while (count < (data.getDataSubchunkSize() / fmt.getBlockAlign())) {
+            while(input.available() != 0){
                 for (int i = 0; i < fmt.getNumChannels(); i++) {
                     input.read(buffer_signal);
-                    k = 0;
+                    power = 0;
                     temp = 0;
                     if (fmt.getBitsPerSample() != 8) {
                         for (int j = 0; j < buffer_signal.length; j++) {
                             if (j == buffer_signal.length - 1) {
-                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), k);
+                                temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(fmt.getBitsPerSample(), power);
                             } else {
                                 temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(fmt.getBitsPerSample(), k);
+                                        * Math.pow(fmt.getBitsPerSample(), power);
                             }
-                            k += 2;
+                            power += 2;
                         }
                     } else {
                         for (int j = 0; j < buffer_signal.length; j++) {
-                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), k);
-                            k += 2;
+                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(fmt.getBitsPerSample(), power);
+                            power += 2;
                         }
                     }
 
                     // temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
                 }
-                count++;
             }
+            // input.read(buffer_signal);
+            // System.out.print(buffer_signal);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             if (input != null) {
                 input.close();
             }
+            System.out.println("done");
+            System.out.println(getFileInfo());
         }
 
     }
 
-    public static void saveAsWav(ArrayList<Double>[] input) {
+    public void saveAsWav(ArrayList<Double>[] input) {
         // file chooser
 
         Stage stage = new Stage();
@@ -173,6 +185,7 @@ public class WavFile {
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showSaveDialog(stage);
         try {
+            System.out.println("saving file...please wait...");
             // declare sourcedataline to stream in
             int bufferSize = 2200;
             byte[] data_write;
@@ -209,9 +222,21 @@ public class WavFile {
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
         } catch (IOException e) {
             System.out.println(e.getStackTrace());
-
+        } finally{
+            System.out.println("done");
         }
 
+    }
+
+    public String getFileInfo(){
+        String info = String.format("file path:\t%s\n" + 
+                                    "sample rate:\t%d Hz\n"+
+                                    "channel:\t%d\n" + 
+                                    "file size:\t%.0f MB \n" + 
+                                    "bitsPerSample:\t%d\n"
+                                    , getFileName(), getSampleRate(), getNumChannels(), getFileSize()/1000000, getBitsPerSample()
+                                    );
+        return info;
     }
 
 }
@@ -222,38 +247,32 @@ class Riff {
     private String format;
 
     public Riff() {
-        // ChunkID = new char[4];
         chunkSize = 0;
-        // format = new char[4];
     }
 
     public void setChunkID(byte[] chunkID_read) {
         char[] chunkID_char = new char[4];
         for (int i = 0; i < chunkID_read.length; i++) {
-            // System.out.println(ChunkID_read[i]);
             chunkID_char[i] = (char) (int) Integer.valueOf(chunkID_read[i]);
         }
         chunkID = new String(chunkID_char);
-        System.out.println("chunk ID:\t" + chunkID);
     }
 
-    public void setChunSize(byte[] chunkSize_read) {
+    public void setChunkDataSize(byte[] chunkSize_read) {
         int k = 0;
         chunkSize = 0;
         for (int i = 0; i < chunkSize_read.length; i++) {
             chunkSize += (long) (Integer.valueOf(chunkSize_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("chunk size:\t" + chunkSize);
     }
 
-    public void setFormat(byte[] format_read) {
+    public void setRiffType(byte[] format_read) {
         char[] format_char = new char[4];
         for (int i = 0; i < format_read.length; i++) {
             format_char[i] = (char) (int) Integer.valueOf(format_read[i]);
         }
         format = new String(format_char);
-        System.out.println("format:\t" + format);
     }
 
     public String getChunkID() {
@@ -271,8 +290,8 @@ class Riff {
 }
 
 class Fmt {
-    private String subchunk;
-    private long subchunk1Size;
+    private String fmtSubchunkID;
+    private long fmtSubchunkSize;
     private int audioFormat; // 1->PCM
     private int numChannels; // channel
     private int sampleRate;
@@ -281,7 +300,7 @@ class Fmt {
     private int bitsPerSample;
 
     public Fmt() {
-        subchunk1Size = 0;
+        fmtSubchunkSize = 0;
         audioFormat = 0;
         numChannels = 0;
         sampleRate = 0;
@@ -290,23 +309,21 @@ class Fmt {
         bitsPerSample = 0;
     }
 
-    public void setSubchunk(byte[] subchunk_read) {
+    public void setSubchunkID(byte[] subchunk_read) {
         char[] subchunk_char = new char[4];
         for (int i = 0; i < subchunk_read.length; i++) {
             subchunk_char[i] = (char) (int) Integer.valueOf(subchunk_read[i]);
         }
-        subchunk = new String(subchunk_char);
-        System.out.println("subchunk:\t" + subchunk);
+        fmtSubchunkID = new String(subchunk_char);
     }
 
-    public void setSubchunk1Size(byte[] subchunk1Size_read) {
+    public void setFmtSubchunkSize(byte[] subchunk1Size_read) {
         int k = 0;
-        subchunk1Size = 0;
+        fmtSubchunkSize = 0;
         for (int i = 0; i < subchunk1Size_read.length; i++) {
-            subchunk1Size += (long) (Integer.valueOf(subchunk1Size_read[i]) & 0xFF) * Math.pow(16, k);
+            fmtSubchunkSize += (long) (Integer.valueOf(subchunk1Size_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("subchunk1 size:\t" + subchunk1Size);
     }
 
     public void setAudioFormat(byte[] audioFormat_read) {
@@ -316,7 +333,6 @@ class Fmt {
             audioFormat += (Integer.valueOf(audioFormat_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("audio format:\t" + audioFormat);
     }
 
     public void setNumChannels(byte[] numChannels_read) {
@@ -326,7 +342,6 @@ class Fmt {
             numChannels += (Integer.valueOf(numChannels_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("num channels:\t" + numChannels);
     }
 
     public void setSampleRate(byte[] sampleRate_read) {
@@ -336,7 +351,6 @@ class Fmt {
             sampleRate += (Integer.valueOf(sampleRate_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("sample rate:\t" + sampleRate);
     }
 
     public void setByteRate(byte[] byteRate_read) {
@@ -346,7 +360,6 @@ class Fmt {
             byteRate += (long) (Integer.valueOf(byteRate_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("byteRate:\t" + byteRate);
     }
 
     public void setBlockAlign(byte[] blockAlign_read) {
@@ -356,7 +369,6 @@ class Fmt {
             blockAlign += (Integer.valueOf(blockAlign_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("block align:\t" + blockAlign);
     }
 
     public void setBitsPerSample(byte[] bitsPerSample_read) {
@@ -366,15 +378,14 @@ class Fmt {
             bitsPerSample += (Integer.valueOf(bitsPerSample_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("bit per sample:\t" + bitsPerSample);
     }
 
-    public String getSubchunk() {
-        return subchunk;
+    public String getSubchunkID() {
+        return fmtSubchunkID;
     }
 
     public long getSubchunk1Size() {
-        return subchunk1Size;
+        return fmtSubchunkSize;
     }
 
     public int getAudioFomat() {
@@ -403,79 +414,36 @@ class Fmt {
 }
 
 class Data {
-    private String dataSubchunk;
-    private long subchunk2Size;
+    private String dataSubchunkID;
+    private long dataSubchunkSize;
 
     public Data() {
-        subchunk2Size = 0;
+        dataSubchunkSize = 0;
     }
 
     public void setDataSubchunk(byte[] dataSubchunk_read) {
-        char[] dataSubchunk_char = new char[4];
+        char[] dataSubchunk_char = new char[2];
         for (int i = 0; i < dataSubchunk_read.length; i++) {
             dataSubchunk_char[i] = (char) (int) Integer.valueOf(dataSubchunk_read[i]);
         }
-        dataSubchunk = new String(dataSubchunk_char);
-        System.out.println("data subchunk:\t" + dataSubchunk);
+        dataSubchunkID = new String(dataSubchunk_char);
+        // System.out.println(dataSubchunkID);
     }
 
-    public void setSubchunk2Size(byte[] subchunk2Size_read) {
+    public void setDataSubchunkSize(byte[] subchunk2Size_read) {
         int k = 0;
-        subchunk2Size = 0;
+        dataSubchunkSize = 0;
         for (int i = 0; i < subchunk2Size_read.length; i++) {
-            subchunk2Size += (Integer.valueOf(subchunk2Size_read[i]) & 0xFF) * Math.pow(16, k);
+            dataSubchunkSize += (Integer.valueOf(subchunk2Size_read[i]) & 0xFF) * Math.pow(16, k);
             k += 2;
         }
-        System.out.println("subchunk2 size:\t" + subchunk2Size);
     }
 
     public String getDataSubchunk() {
-        return dataSubchunk;
+        return dataSubchunkID;
     }
 
-    public long getSubchunk2Size() {
-        return subchunk2Size;
-    }
-}
-
-class Note {
-    private String noteID;
-    private long noteChunkSize;
-    private String noteContent;
-
-    public Note() {
-        noteChunkSize = 0;
-    }
-
-    public void setNoteID(String fromDataID) {
-        noteID = new String(fromDataID);
-        System.out.println("note ID:\t" + noteID);
-    }
-
-    public void setNoteChunkSize(byte[] noteChunkSize_read) {
-        int k = 0;
-        noteChunkSize = 0;
-        for (int i = 0; i < noteChunkSize_read.length; i++) {
-            noteChunkSize += (Integer.valueOf(noteChunkSize_read[i]) & 0xFF) * Math.pow(16, k);
-            k += 2;
-        }
-        System.out.println("note chunk size:\t" + noteChunkSize);
-    }
-
-    public void setNoteContent(byte[] noteContent_read) {
-        char[] noteContent_char = new char[(int) getNoteChunkSize()];
-        for (int i = 0; i < noteContent_read.length; i++) {
-            noteContent_char[i] = (char) (int) Integer.valueOf(noteContent_read[i]);
-        }
-        noteContent = new String(noteContent_read);
-        // System.out.println("note content:\t" + noteContent);
-    }
-
-    public String getNoteId() {
-        return noteID;
-    }
-
-    public long getNoteChunkSize() {
-        return noteChunkSize;
+    public long getDataSubchunkSize() {
+        return dataSubchunkSize;
     }
 }
