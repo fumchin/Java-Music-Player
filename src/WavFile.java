@@ -129,31 +129,40 @@ public class WavFile {
             // }
             
             // read hex data from wav file
-            // while (count < (data.getDataSubchunkSize() / fmt.getBlockAlign())) {
+            // rea until eof
             while(input.available() != 0){
                 for (int i = 0; i < fmt.getNumChannels(); i++) {
                     input.read(buffer_signal);
                     power = 0;
                     temp = 0;
                     if (fmt.getBitsPerSample() != 8) {
+                        // System.out.println(buffer_signal[0]);
+                        // System.out.println(buffer_signal[1]);
+                        // break;
                         for (int j = 0; j < buffer_signal.length; j++) {
                             if (j == buffer_signal.length - 1) {
                                 temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(16, power);
                             } else {
-                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF)
-                                        * Math.pow(16, power);
+                                temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(16, power);
                             }
                             power += 2;
                         }
                     } else {
                         for (int j = 0; j < buffer_signal.length; j++) {
                             temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(16, power);
-                            power += 2;
+                            // power += 2;
                         }
                     }
 
                     // temp = (temp / normalizeConstant);
                     signal[i].add(Double.valueOf(temp));
+                    // if(i==0){
+                    //     System.out.print(temp + "\t");
+                    // }
+                    // else{
+                    //     System.out.println(temp);
+                    // }
+                    
                 }
             }
             // input.read(buffer_signal);
