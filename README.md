@@ -11,10 +11,16 @@
 6. 簡易的和弦辨識，還有很大的進步空間，但簡單的和弦是可以成功辨識的（吉他伴奏之類的）
 7. 播放影片、錄音......
 
-# 版本（操作步驟有空再寫哈哈哈）
+# 版本
 * Java 11
 * JavaFx 11
 
+## Linux
+  1. install java 11
+  ```console
+  sudo apt-get update
+  sudo apt-get install oracle-java11-installer-local
+  ```
 # 最近在幹麻
 * 之前因為很趕所以fft, ifft的轉換並沒有用得很精細，最近在fft之前加了hanning window並在ifft後利用overlap重組訊號，以減少spectral leakage的產生。
 * 優化一下程式碼，寫太趕有點亂哈哈，而且原先fft, ifft一跑下去很容易當機發燙，最近在把他修好一點。
