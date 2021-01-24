@@ -12,15 +12,56 @@
 7. 播放影片、錄音......
 
 # 版本
-* Java 11
+* Java 11  
 * JavaFx 11
 
-## Linux
-  1. install java 11
-  ```console
-  sudo apt-get update
-  sudo apt-get install oracle-java11-installer-local
-  ```
+# How to run
+## Ubuntu
+1. install java 11
+```shell
+$ sudo apt-get update
+$ sudo apt-get install oracle-java11-installer-local
+```
+2. download and unzip [JavaFX Linux SDK - v11.0.2](https://gluonhq.com/products/javafx/)
+3. open the terminal add javafx to PATH_TO_FX (path/to/ is where you locate your javafx folder)
+```shell
+$ export PATH_TO_FX=path/to/javafx-sdk-11.0.2/lib
+``` 
+or write it in `~/.bashrc` directly so you don't have to `export` every single time you open a new terminal
+``` shell
+$ echo 'export PATH_TO_FX=path/to/javafx-sdk-11.0.2/lib' >> ~/.bashrc 
+$ source ~/.bashrc
+```
+1. run the program
+```shell
+$ # run
+$ ./run.sh
+
+$ # you will only use the following commands if you are going to edit the code
+$ # compile
+$ ./compile.sh
+$ # compile and run!!!
+$ ./compile_and_run.sh
+```
+
+## Windows
+1. download and install java 11
+2. download javaFX 11 and add it to environment variables (PATH_TO_FX), you can check out [this](https://openjfx.io/openjfx-docs/#install-javafx)
+3. open windows powershell
+4. open `command_for_Windows.txt` and copy the text inside, pasting on the powershell.
+```shell
+$ #run
+$ cd ./bin/
+$ java --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media Player
+$ cd ..
+```
+or if you want to edit the code and compile it
+```shell
+$ # compile
+$ javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media  ./src/*.java -d ./bin/
+``` 
+
+
 # 最近在幹麻
 * 之前因為很趕所以fft, ifft的轉換並沒有用得很精細，最近在fft之前加了hanning window並在ifft後利用overlap重組訊號，以減少spectral leakage的產生。
 * 優化一下程式碼，寫太趕有點亂哈哈，而且原先fft, ifft一跑下去很容易當機發燙，最近在把他修好一點。
