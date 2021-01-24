@@ -605,7 +605,7 @@ public class PlayerController {
                 // TODO Auto-generated method stub
                 try {
                     // int bufferSize = 2200;
-                    int bufferSize = 1000;
+                    int bufferSize = 2200;
                     byte[] data_write;
                     AudioFormat audioFormat = new AudioFormat(newWavFile.getSampleRate(), newWavFile.getBitsPerSample(),
                             newWavFile.getNumChannels(), true, true);
@@ -622,29 +622,32 @@ public class PlayerController {
                     // int normalizeConstant = (int) Math.pow(2, newWavFile.getBitsPerSample() - 1);
 
                     while (x < end) {
-                        while (index < bufferSize - 4) {
+                        while (index < bufferSize) {
                             for (int channel = 0; channel < newWavFile.getNumChannels(); channel++) {
-                                // int temp = (int) (input[channel].get(x) * (double) normalizeConstant);
                                 int temp = input[channel].get(x).intValue();
-                                // System.out.println(temp);
-                                if(newWavFile.getBitsPerSample() != 8){
-                                    int block_num = newWavFile.getBitsPerSample()/8;
+                                int bytePerSideSampleNum = newWavFile.getBlockAlign()/newWavFile.getNumChannels();
+                                // System.out.println(bytePerSideSampleNum);
+                                if(newWavFile.getBitsPerSample() == 32){
                                     data_write = ByteBuffer.allocate(4).putInt(temp).array();
-                                    for(int block_count = 0; block_count < block_num; block_count++){
-                                        buffer[index +  (3 - block_count)] = data_write[(3 - block_count)];    
+                                    for(int block_count = 0; block_count < bytePerSideSampleNum; block_count++){
+                                        buffer[index + (3 - block_count)] = data_write[(3 - block_count)];    
                                     }
                                     // buffer[index] = data_write[0];
                                     // buffer[index + 1] = data_write[1];
                                     // buffer[index + 2] = data_write[2];
                                     // buffer[index + 3] = data_write[3];
-                                    index += block_num;
+                                } else if(newWavFile.getBitsPerSample() == 16){
+                                    data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                                    for(int block_count = 0; block_count < bytePerSideSampleNum; block_count++){
+                                        buffer[index + block_count] = data_write[(2 + block_count)];    
+                                    }
+                                    // buffer[index] = data_write[2];
+                                    // buffer[index + 1] = data_write[3];
+                                } else if(newWavFile.getBitsPerSample() == 8){
+                                    data_write = ByteBuffer.allocate(4).putInt(temp).array();
+                                    buffer[index] = data_write[3];
                                 }
-                                
-                                
-                                // for(int i=0; i<data_write.length; i++){
-                                //     System.out.print(data_write[i]+"\t");
-                                // }
-                                // System.out.println();
+                                index += bytePerSideSampleNum;
                             }
                             x++;
                         }

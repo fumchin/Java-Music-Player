@@ -57,6 +57,11 @@ public class WavFile {
         return riff.getChunkSize();
     }
 
+    public int getBlockAlign(){
+        return fmt.getBlockAlign();
+    }
+
+
     public void read(String fileNameInput) throws IOException{
         try {
             System.out.println("reading file...please wait...");
@@ -136,9 +141,6 @@ public class WavFile {
                     power = 0;
                     temp = 0;
                     if (fmt.getBitsPerSample() != 8) {
-                        // System.out.println(buffer_signal[0]);
-                        // System.out.println(buffer_signal[1]);
-                        // break;
                         for (int j = 0; j < buffer_signal.length; j++) {
                             if (j == buffer_signal.length - 1) {
                                 temp += (Integer.valueOf(buffer_signal[j])) * Math.pow(16, power);
@@ -149,8 +151,8 @@ public class WavFile {
                         }
                     } else {
                         for (int j = 0; j < buffer_signal.length; j++) {
-                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) * Math.pow(16, power);
-                            // power += 2;
+                            // System.out.println(Integer.valueOf(buffer_signal[j]));
+                            temp += (Integer.valueOf(buffer_signal[j]) & 0xFF) - 127;
                         }
                     }
 
@@ -420,6 +422,7 @@ class Fmt {
     public int getBitsPerSample() {
         return bitsPerSample;
     }
+
 }
 
 class Data {
