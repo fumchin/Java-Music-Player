@@ -8,7 +8,7 @@
 
 
 # 功能
-1. 讀取Wav檔案，最好是44kHz、16 bits per sample的，不然可能會掛掉
+1. 讀取Wav檔案，支援8, 16 and 32 bits per sample的檔案
 2. 儲存修改好的wav檔案
 3. 預覽播放，可以讀在修改當下聽修改的內容
 4. 簡易的編輯功能：速度、音量等等
@@ -72,7 +72,7 @@ $ javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,
 
 
 # 最近在幹麻
-* 重新review WavFile.java, 由`static`改成`non-static`，除了16 bits per sample, 將8 bits, 32 bits ......等等也納入考慮。
+* 重新review WavFile.java, 由`static`改成`non-static`，除了16 bits per sample, 將8 bits, 32 bits ......等等也納入考慮，目前可以讀取並播放8, 16 及32 bits per sample的檔案，存檔還須修正。
 * 之前因為很趕所以fft, ifft的轉換並沒有用得很精細，最近在fft之前加了hanning window並在ifft後利用overlap重組訊號，以減少spectral leakage的產生。
 * 優化一下程式碼，寫太趕有點亂哈哈，而且原先fft, ifft一跑下去很容易當機發燙，最近在把他修好一點。
 
