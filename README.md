@@ -2,6 +2,11 @@
 * 109下學期Java期末專題
 * 做音樂播放器
 
+# Group Members
++ [fumchin](https://github.com/fumchin)
++ [nctu0513325](https://github.com/nctu0513325)
+
+
 # 功能
 1. 讀取Wav檔案，最好是44kHz、16 bits per sample的，不然可能會掛掉
 2. 儲存修改好的wav檔案
@@ -11,13 +16,13 @@
 6. 簡易的和弦辨識，還有很大的進步空間，但簡單的和弦是可以成功辨識的（吉他伴奏之類的）
 7. 播放影片、錄音......
 
-# 版本
+# What we use
 * Java 11  
 * JavaFx 11
 
 # How to run
 ## Ubuntu
-1. install java 11
+1. install Java 11
 ```shell
 $ sudo apt-get update
 $ sudo apt-get install oracle-java11-installer-local
@@ -32,8 +37,9 @@ or write it in `~/.bashrc` directly so you don't have to `export` every single t
 $ echo 'export PATH_TO_FX=path/to/javafx-sdk-11.0.2/lib' >> ~/.bashrc 
 $ source ~/.bashrc
 ```
-1. run the program
+4. run the program
 ```shell
+$ cd path/to/Java-Music-Player
 $ # run
 $ ./run.sh
 
@@ -45,9 +51,12 @@ $ ./compile_and_run.sh
 ```
 
 ## Windows
-1. download and install java 11
-2. download javaFX 11 and add it to environment variables (PATH_TO_FX), you can check out [this](https://openjfx.io/openjfx-docs/#install-javafx)
+1. download and install Java 11
+2. download javaFX 11 and add it to environment variables (PATH_TO_FX), you can check [this](https://openjfx.io/openjfx-docs/#install-javafx) out
 3. open windows powershell
+```shell
+$ cd path/to/Java-Music-Player
+```
 4. open `command_for_Windows.txt` and copy the text inside, pasting on the powershell.
 ```shell
 $ #run
@@ -63,9 +72,9 @@ $ javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,
 
 
 # 最近在幹麻
+* 重新review WavFile.java, 由`static`改成`non-static`，除了16 bits per sample, 將8 bits, 32 bits ......等等也納入考慮。
 * 之前因為很趕所以fft, ifft的轉換並沒有用得很精細，最近在fft之前加了hanning window並在ifft後利用overlap重組訊號，以減少spectral leakage的產生。
 * 優化一下程式碼，寫太趕有點亂哈哈，而且原先fft, ifft一跑下去很容易當機發燙，最近在把他修好一點。
-* 寫了shell script，好執行多了。
 
 # 之後要幹麻
 * 拍點偵測：本來在學期間想做出來，但是失敗了qqqq，想花點時間把他做好，畢竟相信對和弦辨識會有一定幫助。
