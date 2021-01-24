@@ -1,2 +1,2 @@
 #!/bin/bash
-javac --module-path /home/fumchin/Documents/javafx/javafx-sdk-11.0.2/lib/ --add-modules javafx.controls,javafx.fxml,javafx.media ./src/*.java -d ./bin/
+javac --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml,javafx.media ./src/*.java -d ./bin/
