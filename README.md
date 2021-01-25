@@ -1,20 +1,19 @@
 # Introduction
-* 109下學期Java期末專題
-* 做音樂播放器
+* NCTU Java　Programming Course final project
+
+# Function
+1. read your .wav music/audio files (support 8,16,32 bitsPerSample at any sampleRate)
+2. read and store all sample points in .wav files into `ArrrayList<Double>[]` (check out WavFile.java)
+3. save your edits in .wav format
+4. preview your edits in real time
+5. some basic functions：speed and volumn control
+6. `graphic equalizer` that can edit frequency domain by implementing Hanning Windows, FFT(STFT), Filters and iFFT
+7. `chord identification` (basic) that can analyze chord by implementing FFT(STFT), energy analysis and music theory
+8. mp4 player, recorder......
 
 # Group Members
 + [fumchin](https://github.com/fumchin)
 + [nctu0513325](https://github.com/nctu0513325)
-
-
-# 功能
-1. 讀取Wav檔案，支援8, 16 and 32 bits per sample的檔案
-2. 儲存修改好的wav檔案
-3. 預覽播放，可以讀在修改當下聽修改的內容
-4. 簡易的編輯功能：速度、音量等等
-5. EQ(Equalizer)等化器，可以調頻率
-6. 簡易的和弦辨識，還有很大的進步空間，但簡單的和弦是可以成功辨識的（吉他伴奏之類的）
-7. 播放影片、錄音......
 
 # What we use
 * Java 11  
