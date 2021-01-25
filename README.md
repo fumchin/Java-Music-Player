@@ -1,5 +1,5 @@
 # Introduction
-* NCTU Java　Programming Course final project
+* NCTU Java Programming Course final project
 
 # Function
 1. read your .wav music/audio files (support 8,16,32 bitsPerSample at any sampleRate)
@@ -15,9 +15,10 @@
 + [fumchin](https://github.com/fumchin)
 + [nctu0513325](https://github.com/nctu0513325)
 
-# What we use
+# What We Use
 * Java 11  
 * JavaFx 11
+* Scene Builder
 
 # How to run
 ## Ubuntu
@@ -68,7 +69,8 @@ or if you want to edit the code and compile it
 $ # compile
 $ javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media  ./src/*.java -d ./bin/
 ``` 
-
+# Results
+* I'll put my class report on when I'm free.
 
 # 最近在幹麻
 * 重新review WavFile.java, 由`static`改成`non-static`，除了16 bits per sample, 將8 bits, 32 bits ......等等也納入考慮，目前可以讀取並播放8, 16 及32 bits per sample的檔案，存檔還須修正。
@@ -81,7 +83,14 @@ $ javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,
 * 效果器：本身蠻愛彈吉他的，希望能寫出效果器(delay, reverb, distrotion......)然後把吉他接到電腦上去做即時的轉換，感覺會蠻好玩的。
 * 調音器、即時和弦辨識......之類的，希望推甄有上不用考試就可以好好玩這個了哈哈哈。
 
+# Award
+* Java Programming Course In-Class Competition: `Honorable Mention`
+
 # Reference
 * We use `FFT.java` and `Complex.java` from (neat and understandable)  
-  1. https://introcs.cs.princeton.edu/java/97data/FFT.java.html  
-  2. https://introcs.cs.princeton.edu/java/97data/Complex.java.html  
+1. https://introcs.cs.princeton.edu/java/97data/FFT.java.html  
+2. https://introcs.cs.princeton.edu/java/97data/Complex.java.html  
+* Wav File Format Documents
+1. http://soundfile.sapp.org/doc/WaveFormat/
+2. https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
+3. https://cloud.tencent.com/developer/article/1358832 
