@@ -62,11 +62,11 @@ $ cd path/to/Java-Music-Player
 $ #run
 $ cd ./bin/
 $ java --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media Player
-$ cd ..
 ```
 or if you want to edit the code and compile it
 ```shell
 $ # compile
+$ cd path/to/Java-Music-Player
 $ javac --module-path $env:PATH_TO_FX --add-modules=javafx.controls,javafx.fxml,javafx.media  ./src/*.java -d ./bin/
 ``` 
 # Results
