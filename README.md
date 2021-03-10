@@ -51,7 +51,7 @@ $ ./compile_and_run.sh
 ```
 
 ## Windows
-1. download and install Java 11
+1. download and install Java SE 15
 2. download javaFX 11 and add it to environment variables (PATH_TO_FX), you can check [this](https://openjfx.io/openjfx-docs/#install-javafx) out
 3. open windows powershell
 ```shell
