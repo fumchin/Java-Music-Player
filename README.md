@@ -22,7 +22,7 @@
 
 # How to run
 ## Ubuntu
-1. install Java 11
+1. install Java SE 11
 ```shell
 $ sudo apt-get update
 $ sudo apt-get install oracle-java11-installer-local
